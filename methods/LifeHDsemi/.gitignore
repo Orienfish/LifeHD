@@ -160,4 +160,5 @@ cython_debug/
 .idea/
 
 # Pretrained models
-utils/pretrained_models
+utils/pretrained_models/
+
