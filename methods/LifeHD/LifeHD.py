@@ -137,7 +137,7 @@ def get_nc(class_hvs, pair_simil, thres, batch_idx, opt, warmup_done):
     return nc, L, U
 
 
-class UnsupHD():
+class LifeHD():
     def __init__(self, opt, train_loader, val_loader,
                  num_classes, model, logger, device):
         self.opt = opt

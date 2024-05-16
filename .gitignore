@@ -161,3 +161,7 @@ cython_debug/
 
 # Pretrained models
 utils/pretrained_models
+
+datasets/
+save*
+*pretrained_models*

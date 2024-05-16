@@ -48,7 +48,7 @@ def parse_option():
     parser.add_argument('--pretrained_on', type=str, default='none',
                         choices=['none', 'imagenet', 'cifar10'])
     parser.add_argument('--hd_encoder', type=str, default='none',
-                        choices=['none', 'rp', 'idlevel', 'nonlinear', 'timeseries'],
+                        choices=['none', 'rp', 'idlevel', 'nonlinear', 'spatiotemporal'],
                         help='the type of hd encoding function to use')
 
     parser.add_argument('--dim', type=int, default=10000,
@@ -71,8 +71,7 @@ def parse_option():
     
 
     parser.add_argument('--dataset', type=str, default='cifar10',
-                        choices=['cifar10', 'cifar100', 'mnist', 'tinyimagenet',
-                                 'core50', 'stream51', 'har', 'har_timeseries', 'mhealth',
+                        choices=['cifar10', 'cifar100', 'mnist', 'har', 'har_timeseries', 'mhealth',
                                  'isolet', 'esc50'],
                         help='dataset')
 
@@ -106,9 +105,7 @@ def parse_option():
 
     # method
     parser.add_argument('--method', type=str, default='hd',
-                        choices=['BasicHD', 'ManiHD', 'FiniteGroupVSA',
-                                 'InfiniteGroupRFF', 'BinaryRFF', 'C-FSCIL',
-                                 'UnsupHD', 'SemiHD', 'SemiUnsupHD'],
+                        choices=['BasicHD', 'LifeHD', 'SemiHD', 'LifeHDsemi'],
                         help='choose method')
 
     parser.add_argument('--max_classes', type=int, default=10,

@@ -1,7 +1,6 @@
 import copy
 from torchhd import functional
 from torchhd import embeddings
-from torchsummary import summary
 
 import numpy as np
 import torch
@@ -83,7 +82,6 @@ class Model(nn.Module):
                         self.net = resnet50()
 
                 self.net.fc = nn.Identity()  # Disable the classification layer to only take features
-                summary(self.net, (3, 32, 32))
 
             elif self.feature_extractor == 'acdnet':
                 state = torch.load(self.opt.feature_ext_ckpt)
@@ -92,7 +90,6 @@ class Model(nn.Module):
                 self.net = GetACDNetModel(sr=self.opt.sampling_rate, channel_config=config)
                 self.net.load_state_dict(weight)
                 self.net.fcn = nn.Identity()  # Disable the classification layer to only take features
-                summary(self.net, (1, 1, 30225))
 
             elif 'mobilenet' in self.feature_extractor:
                 if self.feature_extractor == 'mobilenet_v2':
@@ -106,7 +103,6 @@ class Model(nn.Module):
                     self.net = mobilenet_v3_small(weights=MobileNet_V3_Small_Weights.IMAGENET1K_V1)
 
                 self.net.classifier = nn.Identity()  # Disable the classification layer to only take features
-                summary(self.net, (3, 32, 32))
 
             self.net.eval()
 
@@ -127,7 +123,7 @@ class Model(nn.Module):
         elif self.hd_encoder == 'nonlinear':  # Nonlinear encoding
             self.nonlinear_projection = embeddings.Sinusoid(self.input_dim, self.hd_dim)
 
-        elif self.hd_encoder == 'timeseries':  # Time-series ID-level encoding
+        elif self.hd_encoder == 'spatiotemporal':  # Time-series ID-level encoding
             # Generate id-level value hv for each floating value
             #self.value = embeddings.Level(opt.num_levels, self.hd_dim,
             #                              randomness=opt.randomness)
@@ -149,7 +145,7 @@ class Model(nn.Module):
                 self.hd_dim = self.input_dim
 
         # Set classify
-        if self.method == 'UnsupHD':
+        if self.method == 'LifeHD':
             self.classify = nn.Linear(self.hd_dim, self.max_classes, bias=False)
             self.classify_sample_cnt = torch.zeros(self.max_classes).to(self.device)
             self.dist_mean = torch.zeros(self.max_classes).to(self.device)
@@ -160,7 +156,7 @@ class Model(nn.Module):
             self.classify = nn.Linear(self.hd_dim, self.num_classes, bias=False)
             self.classify_sample_cnt = torch.zeros((self.num_classes, 1)).to(self.device)
 
-        elif self.method == 'SemiUnsupHD':
+        elif self.method == 'LifeHDsemi':
             # The first num_class in the classify is for labeled classes,
             # while the remaining are unlabeled prototypes
             self.classify = nn.Linear(self.hd_dim, self.max_classes, bias=False)
@@ -203,7 +199,7 @@ class Model(nn.Module):
         elif self.hd_encoder == 'nonlinear':
             sample_hv[:, mask] = self.nonlinear_projection(x)[:, mask]
 
-        elif self.hd_encoder == 'timeseries':
+        elif self.hd_encoder == 'spatiotemporal':
             # First restore the time series order
             x = x.reshape((-1, self.win_size, self.input_dim))
             # tmp_hv = functional.bind(self.position.weight[:, mask],
@@ -246,7 +242,7 @@ class Model(nn.Module):
         if mask is None:
             mask = torch.ones(self.hd_dim, device=self.device).type(torch.bool)
 
-        if self.method == 'UnsupHD':
+        if self.method == 'LifeHD':
             class_hv = self.classify.weight[:self.cur_classes, mask]
         else:  # self.method == 'BasicHD'
             #class_hv = self.classify_weights / self.classify_sample_cnt
@@ -257,7 +253,7 @@ class Model(nn.Module):
         if mask is None:
             mask = torch.ones(self.hd_dim, device=self.device).type(torch.bool)
 
-        if self.method == 'UnsupHD' or self.method == 'SemiUnsupHD':
+        if self.method == 'LifeHD' or self.method == 'LifeHDsemi':
             class_hv = self.classify.weight[:self.cur_classes, mask]
         elif self.method == 'BasicHD':
             class_hv = self.classify.weight[:, mask]
@@ -265,7 +261,7 @@ class Model(nn.Module):
             raise ValueError('method not supported: {}'.format(self.method))
         pair_simil = class_hv @ class_hv.T
 
-        if self.method == 'SemiUnsupHD':
+        if self.method == 'LifeHDsemi':
             pair_simil[:self.num_classes, :self.num_classes] = torch.eye(self.num_classes)
         return pair_simil.detach().cpu().numpy(), class_hv.detach().cpu().numpy()
 

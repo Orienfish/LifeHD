@@ -3,9 +3,9 @@
 #   Example usage:
 #     ./run_lifehd.sh LifeHD mnist iid trial# idlevel
 #   Method choices: BasicHD, SemiHD, LifeHD, LifeHDsemi
-#   Dataset choices: mnist, cifar10, cifar100, tinyimagenet
+#   Dataset choices: mnist, cifar10, cifar100, har, har_timeseries, mhealth, esc50
 #   Trial #: the number of trial
-#   Encoder choices: none, rp, idlevel
+#   Encoder choices: none, rp, idlevel, spatiotemporal
 
 cd ..;
 

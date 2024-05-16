@@ -3,16 +3,12 @@ import random
 import torch
 from torch.utils.data.sampler import Sampler
 from torchvision import transforms, datasets
-from torch.utils.data import Dataset, DataLoader
 
-from .dataset.tinyimagenet import TinyImagenet
 from .dataset.har import HAR
 from .dataset.har_timeseries import HAR_TimeSeries
 from .dataset.isolet import ISOLET
 from .dataset.mhealth import MHEALTH
 from .dataset.esc50 import ESC50
-from .dataset.stream51 import Stream51
-from .dataset.core50 import CORe50
 
 #cifar100_class_array = np.array([4,6,17])  # Use in plotting tsne
 cifar100_class_array = np.arange(20)
@@ -128,13 +124,6 @@ def set_loader(opt):
     elif opt.dataset == 'cifar100':
         mean = (0.5071, 0.4867, 0.4408)
         std = (0.2675, 0.2565, 0.2761)
-    elif opt.dataset == 'tinyimagenet':
-        mean = (0.4802, 0.4480, 0.3975)
-        std = (0.2770, 0.2691, 0.2821)
-    elif opt.dataset == 'stream51' or \
-            opt.dataset == 'core50':
-        mean = (0.485, 0.456, 0.406)
-        std = (0.229, 0.224, 0.225)
     elif opt.dataset == 'mnist':
         mean = (0.1307,)
         std = (0.3081,)
@@ -188,34 +177,6 @@ def set_loader(opt):
         mask = np.isin(labels_np, cifar100_class_array)
         val_dataset.data = val_dataset.data[mask]
         val_dataset.targets = val_dataset.targets[mask]
-
-    elif opt.dataset == 'tinyimagenet':
-        train_dataset = TinyImagenet(root=opt.data_folder + 'TINYIMG',
-                                     transform=transform_image,
-                                     train=True,
-                                     download=True)
-        val_dataset = TinyImagenet(root=opt.data_folder + 'TINYIMG',
-                                   train=False,
-                                   transform=transform_image)
-
-    elif opt.dataset == 'stream51':
-        train_dataset = Stream51(root=opt.data_folder + 'stream51',
-                                 ordering=opt.training_data_type,
-                                 transform=transform_image,
-                                 train=True,
-                                 download=True)
-        val_dataset = Stream51(root=opt.data_folder + 'stream51',
-                               train=False,
-                               transform=transform_image)
-
-    elif opt.dataset == 'core50':
-        train_dataset = CORe50(root=opt.data_folder + 'core50',
-                               transform=transform_image,
-                               train=True,
-                               download=True)
-        val_dataset = CORe50(root=opt.data_folder + 'core50',
-                             train=False,
-                             transform=transform_image)
 
     elif opt.dataset == 'har':
         train_dataset = HAR(root=opt.data_folder + 'HAR',
