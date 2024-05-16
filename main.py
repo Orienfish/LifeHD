@@ -220,7 +220,7 @@ def main():
 
         from methods.SemiHD.SemiHD import SemiHD
         Trainer = SemiHD(opt, train_loader, val_loader,
-                          num_classes, model, logger, device)
+                         num_classes, model, logger, device)
         Trainer.start()
 
     ######################################################
@@ -228,7 +228,7 @@ def main():
     ######################################################
     elif opt.method == "LifeHDsemi":
 
-        from methods.LifeHDsemi import LifeHDsemi
+        from methods.LifeHDsemi.LifeHDsemi import LifeHDsemi
         Trainer = LifeHDsemi(opt, train_loader, val_loader,
                              num_classes, model, logger, device)
         Trainer.start()

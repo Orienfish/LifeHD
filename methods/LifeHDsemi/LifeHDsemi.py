@@ -15,7 +15,7 @@ from sklearn.neighbors import kneighbors_graph
 from scipy.sparse import csgraph
 from tqdm import tqdm
 from utils.eval_utils import eval_acc, eval_nmi, eval_ri
-from utils.eval_utils import plot_tsne, plot_tsne_graph, plot_novelty_detection
+from utils.plot_utils import plot_tsne, plot_tsne_graph, plot_novelty_detection
 
 novelty_detect = []
 class_shift = []
